@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Toggle UI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        .container {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            width: 90%;
+            max-width: 400px;
+        }
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .toggle-row:last-child {
+            margin-bottom: 0;
+        }
+        .text {
+            font-size: 1.2rem;
+            color: #333;
+        }
+        .toggle {
+            position: relative;
+            width: 60px;
+            height: 34px;
+        }
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ff4757;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #2ed573;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem;
+            }
+            .text {
+                font-size: 1rem;
+            }
+            .toggle {
+                width: 50px;
+                height: 28px;
+            }
+            .slider:before {
+                height: 22px;
+                width: 22px;
+                left: 3px;
+                bottom: 3px;
+            }
+            input:checked + .slider:before {
+                transform: translateX(22px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="toggle-row">
+            <span class="text">Beautyful</span>
+            <label class="toggle">
+                <input type="checkbox" id="beautyful">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="toggle-row">
+            <span class="text">Dahej</span>
+            <label class="toggle">
+                <input type="checkbox" id="dahej" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="toggle-row">
+            <span class="text">Seal Packed</span>
+            <label class="toggle">
+                <input type="checkbox" id="sealPacked" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggles = document.querySelectorAll('input[type="checkbox"]');
+            const toggleStates = {
+                beautyful: false,
+                dahej: true,
+                sealPacked: true
+            };
+
+            function updateToggleColor(toggle) {
+                toggle.nextElementSibling.style.backgroundColor = toggle.checked ? '#2ed573' : '#ff4757';
+            }
+
+            function updateToggles(changedToggleId) {
+                const activeToggles = Object.values(toggleStates).filter(state => state).length;
+                const inactiveToggles = Object.values(toggleStates).filter(state => !state).length;
+
+                if (activeToggles > 2) {
+                    // If trying to activate a third toggle, keep the changed one on and turn off the first of the other two
+                    for (let key in toggleStates) {
+                        if (key !== changedToggleId && toggleStates[key]) {
+                            toggleStates[key] = false;
+                            break;
+                        }
+                    }
+                } else if (inactiveToggles > 1) {
+                    // If trying to deactivate a second toggle, keep the changed one off and turn on one of the other two
+                    for (let key in toggleStates) {
+                        if (key !== changedToggleId && !toggleStates[key]) {
+                            toggleStates[key] = true;
+                            break;
+                        }
+                    }
+                }
+
+                toggles.forEach(toggle => {
+                    toggle.checked = toggleStates[toggle.id];
+                    updateToggleColor(toggle);
+                });
+            }
+
+            toggles.forEach(toggle => {
+                updateToggleColor(toggle);
+                toggle.addEventListener('change', function() {
+                    toggleStates[this.id] = this.checked;
+                    updateToggles(this.id);
+                });
+            });
+
+            updateToggles();
+        });
+    </script>
+</body>
+</html>
